@@ -86,10 +86,14 @@ int main(int argc, char *argv[]){
 	SDL_DestroyTexture(loading);//don't need this texture
 
 	//set initial values
-	
+	LoadFile();//load file
 
 	//load textures
-
+	PlayerIMG = GetTexture(PLAYERIMG);//get player image
+	EnemyIMG = GetTexture(ENEMYIMG);//get enemy image
+	LevelButtonIMG = GetTexture(LEVELIMG);//get level button image
+	StartIMG = GetTexture(STARTIMG);//get starting point image
+	ExitIMG = GetTexture(EXITIMG);//get exiting point image
 	Resize();//reload display
 
 
@@ -116,6 +120,18 @@ int main(int argc, char *argv[]){
 				MouseY = (double)(e.tfinger.y) * hs;
 				Clicked();//run clicked function 
 				Draged();//run draged function 
+				break;//get out
+			case SDL_MOUSEBUTTONUP://when clicking up
+				if (e.button.which != SDL_TOUCH_MOUSEID){//if not touch event
+					MouseX = (double)(e.button.x) / maxside;//set x and y position of mouse from square normalised
+					MouseY = (double)(e.button.y) / maxside;
+					select = 0;//deselect 
+				}
+				break;//get out
+			case  SDL_FINGERUP://when finger lifted
+				MouseX = (double)(e.tfinger.x) * ws;//set x and y position of mouse from square normalised
+				MouseY = (double)(e.tfinger.y) * hs;
+				select = 0;//deselect
 				break;//get out
 			case SDL_MOUSEMOTION://when mouse moved
 				if (e.motion.which != SDL_TOUCH_MOUSEID){//if not touch event
@@ -231,30 +247,13 @@ int EventFilter(void* userdata, SDL_Event* e){//event filter
 	return 1;//just in case something wiard happens
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void Quit(void){//quit everything
 	//destroy textures
-
-
-
+	SDL_DestroyTexture(PlayerIMG);
+	SDL_DestroyTexture(EnemyIMG);
+	SDL_DestroyTexture(LevelButtonIMG);
+	SDL_DestroyTexture(StartIMG);
+	SDL_DestroyTexture(ExitIMG);
 
 
 
@@ -274,25 +273,10 @@ void Quit(void){//quit everything
 	IMG_Quit();//quit SDL_Image
 	TTF_Quit();//quit SDL_TTF
 	SDL_Quit();//quit SDL
+	SaveFile();//save file
 	
 	return;//exit function if it didn't exit for some reason
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void GetDisplay(void){//get display
 	SDL_DisplayMode display;//display mode 
@@ -323,76 +307,32 @@ void GetDisplay(void){//get display
 	return;//exit function
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void Clicked(void){//x and y positions clicked
-	lmx = MouseX;//set last mouse click position 
-	lmy = MouseY;
+	switch (displaymode){//switch for each thing to display
+	case MENU:
+
+		break;
+	case LEVEL:
+
+		break;
+	case GAME:
+
+		break;
+	case WIN:
+
+		break;
+	case EXIT:
+
+		break;
+	}
 	
 	return;//exit function
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void Draged(void){
 
 	return;//exit function
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 SDL_Texture* GetTexture(const char *file){//make texture from this file
 	char image[256] = RESOURCES;//folder path
@@ -411,30 +351,6 @@ SDL_Texture* GetTexture(const char *file){//make texture from this file
 	return texture;//return texture
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 TTF_Font* GetFont(const char *file, int size){//get font from file
 	char fontfile[256] = RESOURCES;//folder path
 	strcat(fontfile, FONTS);//append fonts path
@@ -446,32 +362,6 @@ TTF_Font* GetFont(const char *file, int size){//get font from file
 	}
 	return font;//return font
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 SDL_Texture* GetTextTexture(TTF_Font* font, const char* text, int r, int g, int b){//make texture from font text and rgb
 	SDL_Color color;//set color
@@ -495,30 +385,6 @@ SDL_Texture* GetTextTexture(TTF_Font* font, const char* text, int r, int g, int 
 	SDL_FreeSurface(surface);//free surface
 	return texture;//return created texture
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void Resize(void){//recalculate numbers related to size and load texts
 	GetDisplay();//get display
@@ -550,56 +416,8 @@ void Resize(void){//recalculate numbers related to size and load texts
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void DrawBase(void){//draw basic stuff
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void DrawText(SDL_Texture *texture, double x, double y, SDL_Rect *rect, int center){//draw rect of texture at x and y position normalised. Null rect for whole texture. set center to 1 to center to x and y. Draws texture at full size
 	if (texture == NULL) {//if texture passed dosen't exist
@@ -626,32 +444,6 @@ void DrawText(SDL_Texture *texture, double x, double y, SDL_Rect *rect, int cent
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void DrawIMG(SDL_Texture *texture, double x, double y, SDL_Rect *rect, double w, double h, int center){//draw rect of texture at x and y position at scale from maxside normalised. Null rect for whole texture. set center to 1 to center to x and y
 	if (texture == NULL) {//if texture passed dosen't exist
 		texture = somethingwentwrong;//set texture to something went wrong
@@ -673,15 +465,47 @@ void DrawIMG(SDL_Texture *texture, double x, double y, SDL_Rect *rect, double w,
 
 }
 
+void Draw(void){//draw/update screen
+	switch (displaymode){//switch for each thing to display
+	case MENU:
 
+		break;
+	case LEVEL:
 
+		break;
+	case GAME:
+		
+		break;
+	case WIN:
 
+		break;
+	case EXIT:
 
+		break;
+	}
+}
 
+void LoadFile(void){//load from save file
 
+}
 
+void SaveFile(void){//save to save file
+	FILE *file = fopen(SAVE, "wb");//open source file
+	if (file == NULL){//if file could not be opened
+		printf("Save file %s could not be made\n", SAVE);//send error meaaage
+		exit(EXIT_SUCCESS);//exit program
+	}
+	fprintf(file, "%d", maxlevel);//save file
+}
 
-
+void Load(void){//load level from file
+	FILE *file = fopen(SAVE, "rb");//open source file
+	if (file == NULL){//if file could not be opened
+		maxlevel = 1;//start from 1
+	}
+	char string[1024];//string to fill
+	maxlevel = atoi(fgets(string, 1024, file));//get max level
+}
 
 
 

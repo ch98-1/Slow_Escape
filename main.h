@@ -38,7 +38,52 @@
 #define RESOURCES "resources/" //media resources path. 
 #define FONTS "fonts/" //fonts path. Inside media resources path.
 #define FONT "OpenSans-Regular.ttf" //font path
+#define SAVE "resources/save.txt" //save file full path
+#define PLAYERIMG "Player.png" //player image path
+#define ENEMYIMG "Enemy.png" //enemy image path
+#define LEVELIMG "Level.png" //level button image path
+#define STARTIMG "Start.png" //starting point image
+#define EXITIMG "Exit.png" //exit point image
 
+
+//sizes of array
+#define HOME 8//8 home positions
+#define ENEMY 32//32 enemy
+
+
+//in game values
+#define LEVELBUTTON (1/8)//size of level button
+#define ENEMYSIZE (1/12)//size of enemy
+#define PLAYERSIZE (1/12)//size of player
+
+
+//What screen to display
+#define MENU 0 //display menu
+#define LEVEL 1 //display level chooser
+#define GAME 2 //display game
+#define WIN 3 //display win message
+#define EXIT 4 //warning for exiting to menu
+
+int displaymode;//what screen to display
+int level;//what level you are playing
+int maxlevel;//what level you have unlocked
+
+int select;//if player is selected or not
+double playerX, playerY;//player x and y position
+
+typedef struct{//position structure
+	double x, y;//position
+}pos;
+
+typedef struct{//enemy position structure
+	int image;//which image to display. 0 for no enemy
+	pos start;//starting position
+	pos end;//ending position
+}enemy;
+
+pos home[HOME];//home position for players
+pos exitpos;//exit position
+enemy enemys[ENEMY];//enemys
 
 
 SDL_Window *window;//sdl window
@@ -54,6 +99,11 @@ unsigned long int frame;//number of frames from start
 unsigned long int fps;//frames per second
 
 SDL_Texture *somethingwentwrong;//image to display if something goes wrong
+SDL_Texture *PlayerIMG;//player image
+SDL_Texture *EnemyIMG;//enemy image
+SDL_Texture *LevelButtonIMG;//level button image
+SDL_Texture *StartIMG;//starting point image
+SDL_Texture *ExitIMG;//exit point image
 
 
 
@@ -93,6 +143,10 @@ SDL_Texture* GetTextTexture(TTF_Font* font, const char* text, int r, int g, int 
 void DrawBase(void);//draw basic stuff
 void DrawText(SDL_Texture *texture, double x, double y, SDL_Rect *rect, int center);//draw rect of texture at x and y position normalised. Null rect for whole texture. set center to 1 to center to x and y. Draws texture at full size
 void DrawIMG(SDL_Texture *texture, double x, double y, SDL_Rect *rect, double w, double h, int center);//draw rect of texture at x and y position normalised at scale from maxside. Null rect for whole texture. set center to 1 to center to x and y
+void Draw(void);//draw/update screen
+void LoadFile(void);//load from save file
+void SaveFile(void);//save to save file
+void Load(void);//load level from file
 
 
 #endif

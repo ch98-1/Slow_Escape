@@ -76,12 +76,15 @@ int main(int argc, char *argv[]){
 	//initialise and load stuff
 	delay = DELAY;//10 ms delay
 	somethingwentwrong = GetTextTexture(font_64, "somethingwentwrong", 0, 0, 0);//image to display if something went wrong
+	displaymode = MENU;//display menu at start
+	displayd = 0;
+	levelview = 0;
 
 	//loading message
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);//draw white
 	SDL_RenderClear(renderer);//clear screen
 	SDL_Texture *loading = GetTextTexture(font_16, "Loading", 0, 0, 0);//loading message
-	DrawText(loading, 0.5, 0.5, NULL, 1);//draw loading message
+	DrawText(loading, 0.5 * ws, 0.5 * hs, NULL, 1);//draw loading message
 	SDL_RenderPresent(renderer);//present loading message
 	SDL_DestroyTexture(loading);//don't need this texture
 
@@ -90,7 +93,12 @@ int main(int argc, char *argv[]){
 
 	//load textures
 	PlayerIMG = GetTexture(PLAYERIMG);//get player image
-	EnemyIMG = GetTexture(ENEMYIMG);//get enemy image
+	int i;
+	for (i = 0; i < ENEMYIMGSIZE; i++){//for each enemy
+		char string[1024];//string to fill
+		sprintf(string, "%s%d.png", ENEMYIMG, i);//load file name
+		EnemyIMG[i] = GetTexture(string);//get enemy image
+	}
 	LevelButtonIMG = GetTexture(LEVELIMG);//get level button image
 	StartIMG = GetTexture(STARTIMG);//get starting point image
 	ExitIMG = GetTexture(EXITIMG);//get exiting point image
@@ -161,16 +169,28 @@ int main(int argc, char *argv[]){
 				break;//get out
 			}
 		}
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);//draw white
-		SDL_RenderClear(renderer);//clear screen
-		DrawBase();//draw background image
+
+		//calculate enemy movement
+		switch (displaymode){//switch for each thing to display
+		case MENU:
+
+			break;
+		case LEVEL:
+
+			break;
+		case GAME:
+
+			break;
+		case WIN:
+
+			break;
+		case EXIT:
+
+			break;
+		}
 
 
-
-
-
-
-		SDL_RenderPresent(renderer);//present rendered
+		Draw();//draw screen
 		if (difftime(time(NULL), lasttime) >= 1){//if 1 second passed
 			fps = frame - lastframe;//set fps
 			lasttime = time(NULL);//set new lasttime
@@ -304,16 +324,48 @@ void GetDisplay(void){//get display
 	ws = (double)width / (double)maxside;//get width and height 
 	hs = (double)height / (double)maxside;
 
+	cx = (ws - 1) / 2;//get centerd square x and y
+	cy = (hs - 1) / 2;
+
 	return;//exit function
 }
 
 void Clicked(void){//x and y positions clicked
+	int i;
 	switch (displaymode){//switch for each thing to display
 	case MENU:
-
+		if (MouseY > 0.3 * hs && MouseY < 0.5 * hs){//if hitting play button
+			displaymode = GAME;//go in to game mode
+			level = maxlevel;//set to next level
+			Load();//load game
+		}
+		else if (MouseY < 0.7 * hs && MouseY > 0.5 * hs){//if hitting levels button
+			displaymode = LEVEL;//go in to game mode
+			displayd = 0;
+			levelview = 0;
+		}
 		break;
 	case LEVEL:
-
+		if (levelview){//if not in first view
+			if (MouseX < 0.1){
+				displayd = 0;
+				levelview--;
+			}
+		}
+		if ((levelview + 1) * (1 / LEVELBUTTONSPACING) * (1 / LEVELBUTTONSPACING) < maxlevel){//if not in last view
+			if (MouseX > ws - 0.1){
+				displayd = 0;
+				levelview++;
+			}
+		}
+		for (i = 1; i + (int)(levelview * (1 / LEVELBUTTONSPACING) * (1 / LEVELBUTTONSPACING)) <= maxlevel; i++){//for each button
+			if (hypot((cx + LEVELBUTTONSPACING / 2 + ((i - 1) % (int)(1 / LEVELBUTTONSPACING)) * LEVELBUTTONSPACING) - MouseX, (cy + LEVELBUTTONSPACING / 2 + ((i - 1) / (int)(1 / LEVELBUTTONSPACING)) * LEVELBUTTONSPACING) - MouseY) < LEVELBUTTON / 2){//if within a clicking range
+				displaymode = GAME;//go in to game mode
+				level = i + (int)(levelview * (1 / LEVELBUTTONSPACING) * (1 / LEVELBUTTONSPACING));//set to next level
+				Load();//load game
+				break;
+			}
+		}
 		break;
 	case GAME:
 
@@ -323,6 +375,9 @@ void Clicked(void){//x and y positions clicked
 		break;
 	case EXIT:
 
+		break;
+	default://if it is other value
+		displaymode = MENU;//return to menu
 		break;
 	}
 	
@@ -412,11 +467,14 @@ void Resize(void){//recalculate numbers related to size and load texts
 
 
 	if (renderer != NULL){//if there is a renderer
-		
+		displayd = 0;
+		levelview = 0;
 	}
 }
 
 void DrawBase(void){//draw basic stuff
+	SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);//draw yellow
+	SDL_RenderClear(renderer);//clear screen
 }
 
 void DrawText(SDL_Texture *texture, double x, double y, SDL_Rect *rect, int center){//draw rect of texture at x and y position normalised. Null rect for whole texture. set center to 1 to center to x and y. Draws texture at full size
@@ -466,15 +524,51 @@ void DrawIMG(SDL_Texture *texture, double x, double y, SDL_Rect *rect, double w,
 }
 
 void Draw(void){//draw/update screen
+	SDL_Texture *Buttons;//button text
+	char string[1024];//string to fill
+	int i;
 	switch (displaymode){//switch for each thing to display
 	case MENU:
-
+		if (displayd) break;
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);//draw white
+		SDL_RenderClear(renderer);//clear screen
+		DrawBase();//draw background image
+		Buttons = GetTextTexture(font_16, "Play", 0, 0, 255);//play button
+		DrawText(Buttons, 0.5 * ws, 0.4 * hs, NULL, 1);//draw play button
+		SDL_DestroyTexture(Buttons);//destroy texture
+		Buttons = GetTextTexture(font_16, "Levels", 0, 0, 255);//play button
+		DrawText(Buttons, 0.5 * ws, 0.6 * hs, NULL, 1);//draw levels button
+		SDL_DestroyTexture(Buttons);//destroy texture
+		displayd = 1;//set displayd
+		SDL_RenderPresent(renderer);//present rendered
 		break;
 	case LEVEL:
-
+		if (displayd) break;
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);//draw white
+		SDL_RenderClear(renderer);//clear screen
+		DrawBase();//draw background image
+		if (levelview){//if not in first view
+			Buttons = GetTextTexture(font_8, "<", 0, 0, 255);//back button
+			DrawText(Buttons, 0.05 , 0.5 * hs, NULL, 1);//draw back button
+			SDL_DestroyTexture(Buttons);//destroy texture
+		}
+		if ((levelview + 1) * (1 / LEVELBUTTONSPACING) * (1 / LEVELBUTTONSPACING) < maxlevel){//if not in last view
+			Buttons = GetTextTexture(font_8, ">", 0, 0, 255);//next button
+			DrawText(Buttons, ws - 0.05, 0.5 * hs, NULL, 1);//draw next button
+			SDL_DestroyTexture(Buttons);//destroy texture
+		}
+		for (i = 1; i + (int)(levelview * (1 / LEVELBUTTONSPACING) * (1 / LEVELBUTTONSPACING)) <= maxlevel; i++){//for each button
+			DrawIMG(LevelButtonIMG, cx + LEVELBUTTONSPACING / 2 + ((i - 1) % (int)(1 / LEVELBUTTONSPACING)) * LEVELBUTTONSPACING, cy + LEVELBUTTONSPACING / 2 + ((i - 1) / (int)(1 / LEVELBUTTONSPACING)) * LEVELBUTTONSPACING, NULL, LEVELBUTTON, LEVELBUTTON, 1);//draw circle
+			sprintf(string, "%d", i + (int)(levelview * (1 / LEVELBUTTONSPACING) * (1 / LEVELBUTTONSPACING)));//load level name
+			Buttons = GetTextTexture(font_24, string, 0, 0, 255);//next button
+			DrawText(Buttons, cx + LEVELBUTTONSPACING / 2 + ((i - 1) % (int)(1 / LEVELBUTTONSPACING)) * LEVELBUTTONSPACING, cy + LEVELBUTTONSPACING / 2 + ((i - 1) / (int)(1 / LEVELBUTTONSPACING)) * LEVELBUTTONSPACING, NULL, 1);//draw next button
+			SDL_DestroyTexture(Buttons);//destroy texture
+		}
+		displayd = 1;//set displayd
+		SDL_RenderPresent(renderer);//present rendered
 		break;
 	case GAME:
-		
+
 		break;
 	case WIN:
 
@@ -486,25 +580,58 @@ void Draw(void){//draw/update screen
 }
 
 void LoadFile(void){//load from save file
-
+	FILE *file = fopen(SAVE, "rb");//open source file
+	if (file == NULL){//if file could not be opened
+		printf("Save file %s could not be opened. Creating new save file\n", SAVE);//send error message
+		maxlevel = 1;//start from 1
+		SaveFile();//create new save file
+		return;//exit function
+	}
+	char string[1024];//string to fill
+	maxlevel = atoi(fgets(string, 1024, file));//get max level
 }
 
 void SaveFile(void){//save to save file
 	FILE *file = fopen(SAVE, "wb");//open source file
 	if (file == NULL){//if file could not be opened
-		printf("Save file %s could not be made\n", SAVE);//send error meaaage
-		exit(EXIT_SUCCESS);//exit program
+		printf("Save file %s could not be made\n", SAVE);//send error message
+		return;//exit function
 	}
 	fprintf(file, "%d", maxlevel);//save file
 }
 
 void Load(void){//load level from file
-	FILE *file = fopen(SAVE, "rb");//open source file
-	if (file == NULL){//if file could not be opened
-		maxlevel = 1;//start from 1
-	}
 	char string[1024];//string to fill
-	maxlevel = atoi(fgets(string, 1024, file));//get max level
+	sprintf(string, "%slevel%d.txt", RESOURCES, level);//load file name
+	FILE *file = fopen(string, "rb");//open source file
+	if (file == NULL){//if file could not be opened
+		printf("Level file %s could not be opened.\n", string);//send error message
+		displaymode = MENU;//display menu at start
+		displayd = 0;
+		return;//exit function
+	}
+	int i;
+	for (i = 0; i < HOME; i++){//for each home position
+		fgets(string, 1024, file);//get line
+		home[i].x = atof(strtok(string, " ,:;()<>\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		home[i].y = atof(strtok(string, " ,:;()<>\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+	}
+	fgets(string, 1024, file);//skip line
+	fgets(string, 1024, file);//get line
+	exitpos.x = atof(strtok(string, " ,:;()<>\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+	exitpos.y = atof(strtok(string, " ,:;()<>\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+	for (i = 0; i < ENEMY; i++){//for each home position
+		fgets(string, 1024, file);//get line
+		enemys[i].image = atoi(strtok(string, " ,:;()<>\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		fgets(string, 1024, file);//get line
+		enemys[i].cur.x = enemys[i].start.x = atof(strtok(string, " ,:;()<>\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		enemys[i].cur.y = enemys[i].start.y = atof(strtok(string, " ,:;()<>\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		fgets(string, 1024, file);//get line
+		enemys[i].speed = atof(strtok(string, " ,:;()<>\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		fgets(string, 1024, file);//get line
+		enemys[i].range = atof(strtok(string, " ,:;()<>\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		fgets(string, 1024, file);//skip line
+	}
 }
 
 

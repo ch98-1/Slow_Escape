@@ -39,9 +39,9 @@
 #define FONTS "fonts/" //fonts path. Inside media resources path.
 #define FONT "OpenSans-Regular.ttf" //font path
 #define SAVE "resources/save.txt" //save file full path
-#define PLAYERIMG "Player.png" //player image path
-#define ENEMYIMG "Enemy.png" //enemy image path
-#define LEVELIMG "Level.png" //level button image path
+#define PLAYERIMG "Player.png" //player image
+#define ENEMYIMG "Enemy" //enemy image prefix
+#define LEVELIMG "Level.png" //level button image
 #define STARTIMG "Start.png" //starting point image
 #define EXITIMG "Exit.png" //exit point image
 
@@ -49,12 +49,14 @@
 //sizes of array
 #define HOME 8//8 home positions
 #define ENEMY 32//32 enemy
+#define ENEMYIMGSIZE 8//8 different enemy images
 
 
 //in game values
-#define LEVELBUTTON (1/8)//size of level button
-#define ENEMYSIZE (1/12)//size of enemy
-#define PLAYERSIZE (1/12)//size of player
+#define LEVELBUTTON (1.0/8)//size of level button
+#define LEVELBUTTONSPACING (1.0/6)//spacing of level button
+#define ENEMYSIZE (1.0/12)//size of enemy
+#define PLAYERSIZE (1.0/12)//size of player
 
 
 //What screen to display
@@ -78,19 +80,23 @@ typedef struct{//position structure
 typedef struct{//enemy position structure
 	int image;//which image to display. 0 for no enemy
 	pos start;//starting position
-	pos end;//ending position
+	pos cur;//current position
+	double speed;//speed in ratio to player movement
+	double range;//range in ratio to player range
 }enemy;
 
 pos home[HOME];//home position for players
 pos exitpos;//exit position
 enemy enemys[ENEMY];//enemys
 
+int displayd;//if displayd or not
+int levelview;//which level screen you are in
 
 SDL_Window *window;//sdl window
 SDL_Renderer *renderer;//sdl renderer
 SDL_Event e;//event
 
-
+double cx, cy;//x and y of centered square
 int width, height, maxside;//width and hight and smallest of 2 side of window
 double ws, hs;//width and height scaled to maxside
 time_t lasttime;//last time mesured
@@ -100,7 +106,7 @@ unsigned long int fps;//frames per second
 
 SDL_Texture *somethingwentwrong;//image to display if something goes wrong
 SDL_Texture *PlayerIMG;//player image
-SDL_Texture *EnemyIMG;//enemy image
+SDL_Texture *EnemyIMG[ENEMY];//enemy image array
 SDL_Texture *LevelButtonIMG;//level button image
 SDL_Texture *StartIMG;//starting point image
 SDL_Texture *ExitIMG;//exit point image

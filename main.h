@@ -30,7 +30,7 @@
 
 #define TEXT_INPUT_SHIFT 0 //y shift when inputting text
 
-#define WINDOW_NAME "Trigonometry"
+#define WINDOW_NAME "Slow Escape"
 #define DELAY 10 //default delay
 #define DELAY_SLOW 100 //dealy while in background
 
@@ -44,7 +44,12 @@
 #define LEVELIMG "Level.png" //level button image
 #define STARTIMG "Start.png" //starting point image
 #define EXITIMG "Exit.png" //exit point image
+#define SOUNDIMG "Speaker_Icon.png" //speaker icon
+#define MUTEIMG "Mute_Icon.png" //mute icon
+#define SOUND "BGM.wav" //BGM sound file
 
+//number of levels
+#define MAXLEVEL 36//36 levels max
 
 //sizes of array
 #define HOME 8//8 home positions
@@ -92,6 +97,8 @@ enemy enemys[ENEMY];//enemys
 int displayd;//if displayd or not
 int levelview;//which level screen you are in
 
+int sound;//0 for mute 1 for play
+
 SDL_Window *window;//sdl window
 SDL_Renderer *renderer;//sdl renderer
 SDL_Event e;//event
@@ -106,12 +113,24 @@ unsigned long int fps;//frames per second
 
 SDL_Texture *somethingwentwrong;//image to display if something goes wrong
 SDL_Texture *PlayerIMG;//player image
-SDL_Texture *EnemyIMG[ENEMY];//enemy image array
+SDL_Texture *EnemyIMG[ENEMYIMGSIZE];//enemy image array
 SDL_Texture *LevelButtonIMG;//level button image
 SDL_Texture *StartIMG;//starting point image
 SDL_Texture *ExitIMG;//exit point image
+SDL_Texture *Sound;//when sound id on
+SDL_Texture *Mute;//when sound is muted
+SDL_Texture *Menu;//nemu button
+SDL_Texture *Level;//level label
+SDL_Texture *Background;//background image
 
-
+//audio stuff
+SDL_AudioFormat deviceFormat;//device format
+Uint8 *mixData;//sound data
+SDL_AudioSpec want, have;
+SDL_AudioDeviceID dev;
+Uint32 wav_length;//sound length
+Uint32 wav_current;//current position 
+Uint8 *audio_pos;//audio position
 
 double scale;//scale up or down
 double xshift;//shift in x direction
@@ -153,6 +172,8 @@ void Draw(void);//draw/update screen
 void LoadFile(void);//load from save file
 void SaveFile(void);//save to save file
 void Load(void);//load level from file
+void AudioCallback(void *udata, Uint8 *stream, int len);//audio callback function
+
 
 
 #endif

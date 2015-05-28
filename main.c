@@ -131,6 +131,7 @@ int main(int argc, char *argv[]){
 	ExitIMG = GetTexture(EXITIMG);//get exiting point image
 	Sound = GetTexture(SOUNDIMG);//get sound icon image
 	Mute = GetTexture(MUTEIMG);//get mute icon image
+	MenuBackground = GetTexture(MENUBACKGROUND);//get Menu background image
 	Resize();//reload display
 
 
@@ -309,6 +310,7 @@ void Quit(void){//quit everything
 	SDL_DestroyTexture(Menu);
 	SDL_DestroyTexture(Level);
 	SDL_DestroyTexture(Background);
+	SDL_DestroyTexture(MenuBackground);
 
 	SaveFile();//save file
 	SDL_CloseAudioDevice(dev);//close audio
@@ -618,6 +620,7 @@ void Draw(void){//draw/update screen
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);//draw white
 		SDL_RenderClear(renderer);//clear screen
 		DrawBase();//draw background image
+		DrawIMG(MenuBackground, 0.5 * ws, 0.5 * hs, NULL, hs * 2, hs, 1);//draw Menu background
 		Buttons = GetTextTexture(font_16, "Play", 0, 0, 255);//play button
 		DrawText(Buttons, 0.5 * ws, 0.4 * hs, NULL, 1);//draw play button
 		SDL_DestroyTexture(Buttons);//destroy texture
@@ -780,7 +783,7 @@ void Load(void){//load level from file
 		return;//exit function
 	}
 	SDL_DestroyTexture(Background);//destroy texture
-	Background = GetTexture(strtok(str, "\n\t "));//get background image texture
+	Background = GetTexture(strtok(str, "\n\t\r :;,{}[]\"\""));//get background image texture
 	fgets(string, 1024, file);//skip line
 	int i;
 	for (i = 0; i < HOME; i++){//for each home position

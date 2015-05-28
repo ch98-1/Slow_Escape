@@ -47,6 +47,7 @@
 #define SOUNDIMG "Speaker_Icon.png" //speaker icon
 #define MUTEIMG "Mute_Icon.png" //mute icon
 #define SOUND "BGM.wav" //BGM sound file
+#define MENUBACKGROUND "MenuBackground.png"
 
 //number of levels
 #define MAXLEVEL 36//36 levels max
@@ -122,6 +123,7 @@ SDL_Texture *Mute;//when sound is muted
 SDL_Texture *Menu;//nemu button
 SDL_Texture *Level;//level label
 SDL_Texture *Background;//background image
+SDL_Texture *MenuBackground;//menu background image
 
 //audio stuff
 SDL_AudioFormat deviceFormat;//device format

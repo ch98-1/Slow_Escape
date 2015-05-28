@@ -308,6 +308,7 @@ void Quit(void){//quit everything
 	SDL_DestroyTexture(ExitIMG);
 	SDL_DestroyTexture(Menu);
 	SDL_DestroyTexture(Level);
+	SDL_DestroyTexture(Background);
 
 	SaveFile();//save file
 	SDL_CloseAudioDevice(dev);//close audio
@@ -405,13 +406,19 @@ void Clicked(void){//x and y positions clicked
 				break;
 			}
 		}
-		if (MouseX > ws - 0.2 && MouseY < 0.1){//if clicked menu
+		if (MouseX > ws - 0.15 && MouseY < 0.1){//if clicked menu
 			displaymode = MENU;//display menu
 			displayd = 0;
 		}
 		break;
 	case GAME:
 
+
+
+		if (MouseX > ws - 0.15 && MouseY < 0.1){//if clicked menu
+			displaymode = EXIT;//display menu
+			displayd = 0;
+		}
 		break;
 	case WIN:
 		if (level != 1){//if not in level
@@ -430,7 +437,7 @@ void Clicked(void){//x and y positions clicked
 				Load();//load game
 			}
 		}
-		if (MouseX > ws - 0.2 && MouseY < 0.1){//if clicked menu
+		if (MouseX > ws - 0.15 && MouseY < 0.1){//if clicked menu
 			displaymode = MENU;//display menu
 			displayd = 0;
 		}
@@ -542,7 +549,7 @@ void Resize(void){//recalculate numbers related to size and load texts
 
 	if (renderer != NULL){//if there is a renderer
 		SDL_DestroyTexture(Menu);
-		Menu = GetTextTexture(font_16, "Menu", 0, 0, 255);//menu button
+		Menu = GetTextTexture(font_24, "Menu", 0, 0, 255);//menu button
 		displayd = 0;
 		Draw();//redraw everything
 	}
@@ -642,7 +649,7 @@ void Draw(void){//draw/update screen
 			DrawText(Buttons, cx + LEVELBUTTONSPACING / 2 + ((i - 1) % (int)(1 / LEVELBUTTONSPACING)) * LEVELBUTTONSPACING, cy + LEVELBUTTONSPACING / 2 + ((i - 1) / (int)(1 / LEVELBUTTONSPACING)) * LEVELBUTTONSPACING, NULL, 1);//draw next button
 			SDL_DestroyTexture(Buttons);//destroy texture
 		}
-		DrawText(Menu, ws - 0.1, 0.05, NULL, 1);//draw menu button
+		DrawText(Menu, ws - 0.075, 0.05, NULL, 1);//draw menu button
 		displayd = 1;//set displayd
 		SDL_RenderPresent(renderer);//present rendered
 		break;
@@ -650,13 +657,15 @@ void Draw(void){//draw/update screen
 		if (!displayd){//if not desplayd
 			SDL_DestroyTexture(Level);
 			sprintf(string, "Level %d", level);//generate level label
-			Level = GetTextTexture(font_16, string, 0, 0, 255);//level label
+			Level = GetTextTexture(font_24, string, 0, 0, 255);//level label
 		}
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);//draw white
 		SDL_RenderClear(renderer);//clear screen
 		DrawBase();//draw background image
 
 
+		DrawText(Menu, ws - 0.075, 0.05, NULL, 1);//draw menu button
+		DrawText(Level, 0.1, 0.05, NULL, 1);//draw level label
 		displayd = 1;//set displayd
 		SDL_RenderPresent(renderer);//present rendered
 		break;
@@ -685,7 +694,7 @@ void Draw(void){//draw/update screen
 			DrawText(Buttons, ws - 0.05, 0.5 * hs, NULL, 1);//draw next button
 			SDL_DestroyTexture(Buttons);//destroy texture
 		}
-		DrawText(Menu, ws - 0.1, 0.05, NULL, 1);//draw menu button
+		DrawText(Menu, ws - 0.075, 0.05, NULL, 1);//draw menu button
 		displayd = 1;//set displayd
 		SDL_RenderPresent(renderer);//present rendered
 		break;
@@ -771,7 +780,7 @@ void Load(void){//load level from file
 		return;//exit function
 	}
 	SDL_DestroyTexture(Background);//destroy texture
-	Background = GetTexture(str);//get background image texture
+	Background = GetTexture(strtok(str, "\n\t "));//get background image texture
 	fgets(string, 1024, file);//skip line
 	int i;
 	for (i = 0; i < HOME; i++){//for each home position

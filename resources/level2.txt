@@ -1,27 +1,27 @@
-DefaultBGI.png;;Image to load for background. Square is default. use ";" before comment
-;;skip line
-0.5, 1;;list of 8 home positions
+DefaultBGI.png
+
+0.5, 1
+0.5, 0.5
+0.5, 0
 0.5, 1
 0.5, 1
 0.5, 1
 0.5, 1
 0.5, 1
-0.5, 1
-0.5, 1
-;;skip line
-0.5, 0;;exit position
-;;List of 32 enemys
-1;;enemy image number + 1. 0 for no enemy
-0, 0.5;;starting position of the enemy
-0.5;;speed of enemy
-0.4;;range of enemy
+
+0.5, 0
 
 1
-1, 0.5
-0.5
-0.4
+0.25, 0.25
+1
+1.2
 
-0;;no enemy
+1
+0.75, 0.75
+1
+1.2
+
+0
 1, 0.5
 0.5
 0.4

@@ -202,20 +202,33 @@ int main(int argc, char *argv[]){
 
 		//calculate enemy movement
 		switch (displaymode){//switch for each thing to display
-		case MENU:
-
-			break;
-		case LEVEL:
-
-			break;
 		case GAME:
-
-			break;
-		case WIN:
-
-			break;
-		case EXIT:
-
+			if (hypot(player.x - exitpos.x, player.y - exitpos.y) < PLAYERSIZE){//if in right range of exit
+				displaymode = WIN;//display win screen
+				displayd = 0;
+			}
+			double PM = hypot(PlayerMovement.x, PlayerMovement.y);//get player movement
+			double HD = GetHome();//get distance to closest home
+			for (i = 0; i < ENEMY; i++){//for each enemy
+				if (enemys[i].image){//if there is enemy there
+					double x = enemys[i].cur.x += enemys[i].speed * fabs(PM) * -((enemys[i].cur.x - player.x) / hypot(enemys[i].cur.x - player.x, enemys[i].cur.y - player.y));//get x position and copy value to x
+					double y = enemys[i].cur.y += enemys[i].speed * fabs(PM) * -((enemys[i].cur.y - player.y) / hypot(enemys[i].cur.x - player.x, enemys[i].cur.y - player.y));//get y position and copy value to y
+					x = x < 0 ? 0 : x > 1 ? 1 : x;//get x in to range of 0 to 1
+					y = y < 0 ? 0 : y > 1 ? 1 : y;//get y in to range of 0 to 1
+					enemys[i].cur.x = x;//return copy
+					enemys[i].cur.y = y;
+					if (hypot(x - enemys[i].start.x, y - enemys[i].start.y) > HD * enemys[i].range){//if out of range
+						enemys[i].cur.x += (hypot(x - enemys[i].start.x, y - enemys[i].start.y) - HD * enemys[i].range) * -((x - enemys[i].start.x) / hypot(x - enemys[i].start.x, y - enemys[i].start.y));//get x position
+						enemys[i].cur.y += (hypot(x - enemys[i].start.x, y - enemys[i].start.y) - HD * enemys[i].range) * -((y - enemys[i].start.y) / hypot(x - enemys[i].start.x, y - enemys[i].start.y));//get y position
+					}
+					if (hypot(player.x - enemys[i].cur.x, player.y - enemys[i].cur.y) < PLAYERSIZE){//if in right range of exit
+						displaymode = LOSE;//display lose screen
+						displayd = 0;
+					}
+				}
+			}
+			PlayerMovement.x = 0;//reset player movement
+			PlayerMovement.y = 0;
 			break;
 		}
 
@@ -414,9 +427,18 @@ void Clicked(void){//x and y positions clicked
 		}
 		break;
 	case GAME:
-
-
-
+		if (hypot(MouseX - (player.x * (1 - PLAYERSIZE) + cx + PLAYERSIZE / 2), MouseY - (player.y * (1 - PLAYERSIZE) + cy + PLAYERSIZE / 2)) < PLAYERSIZE / 2){//if clicked on player
+			select = 1;//make player selected
+			double x, y;//x and y position of mouse in in game coordinate
+			x = (MouseX - cx - PLAYERSIZE / 2) / (1 - PLAYERSIZE);//get position
+			y = (MouseY - cy - PLAYERSIZE / 2) / (1 - PLAYERSIZE);
+			x = x < 0 ? 0 : x > 1 ? 1 : x;//get x in to range of 0 to 1
+			y = y < 0 ? 0 : y > 1 ? 1 : y;//get y in to range of 0 to 1
+			PlayerMovement.x += fabs(player.x - x);//get player movement
+			PlayerMovement.y += fabs(player.y - y);
+			player.x = x;//set player position to mouse position
+			player.y = y;
+		}
 		if (MouseX > ws - 0.15 && MouseY < 0.1){//if clicked menu
 			displaymode = EXIT;//display menu
 			displayd = 0;
@@ -443,9 +465,9 @@ void Clicked(void){//x and y positions clicked
 			displaymode = MENU;//display menu
 			displayd = 0;
 		}
-		if (MouseY < hs * 0.6 && MouseY > hs * 0.5){//if clicked replay
+		if (MouseY < hs * 0.65 && MouseY > hs * 0.55){//if clicked replay
 			displayd = 0;
-			displaymode = GAME;//display menu
+			displaymode = GAME;//display game
 			Load();//load game
 		}
 		break;
@@ -457,8 +479,19 @@ void Clicked(void){//x and y positions clicked
 			}
 			else{//if clicked on no
 				displayd = 0;
-				displaymode = GAME;//display menu
+				displaymode = GAME;//display game
 			}
+		}
+		break;
+	case LOSE:
+		if (MouseY < hs * 0.65 && MouseY > hs * 0.55){//if clicked in range
+			displayd = 0;
+			displaymode = GAME;//display game
+			Load();//load game
+		}
+		if (MouseX > ws - 0.15 && MouseY < 0.1){//if clicked menu
+			displaymode = MENU;//display menu
+			displayd = 0;
 		}
 		break;
 	default://if it is other value
@@ -470,7 +503,17 @@ void Clicked(void){//x and y positions clicked
 }
 
 void Draged(void){
-	
+	if (displaymode == GAME && select){//if player is selected
+		double x, y;//x and y position of mouse in in game coordinate
+		x = (MouseX - cx - PLAYERSIZE / 2) / (1 - PLAYERSIZE);//get position
+		y = (MouseY - cy - PLAYERSIZE / 2) / (1 - PLAYERSIZE);
+		x = x < 0 ? 0 : x > 1 ? 1 : x;//get x in to range of 0 to 1
+		y = y < 0 ? 0 : y > 1 ? 1 : y;//get y in to range of 0 to 1
+		PlayerMovement.x += fabs(player.x - x);//get player movement
+		PlayerMovement.y += fabs(player.y - y);
+		player.x = x;//set player position to mouse position
+		player.y = y;
+	}
 	return;//exit function
 }
 
@@ -665,8 +708,13 @@ void Draw(void){//draw/update screen
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);//draw white
 		SDL_RenderClear(renderer);//clear screen
 		DrawBase();//draw background image
-
-
+		for (i = 0; i < ENEMY; i++){//for each enemy
+			if (enemys[i].image){//if there is enemy there
+				DrawIMG(EnemyIMG[enemys[i].image - 1], enemys[i].cur.x * (1 - PLAYERSIZE) + cx + PLAYERSIZE / 2, enemys[i].cur.y * (1 - PLAYERSIZE) + cy + PLAYERSIZE / 2, NULL, PLAYERSIZE, PLAYERSIZE, 1);//draw enemy
+			}
+		}
+		DrawIMG(ExitIMG, exitpos.x * (1 - PLAYERSIZE) + cx + PLAYERSIZE / 2, exitpos.y * (1 - PLAYERSIZE) + cy + PLAYERSIZE / 2, NULL, PLAYERSIZE, PLAYERSIZE, 1);//draw exit
+		DrawIMG(PlayerIMG, player.x * (1 - PLAYERSIZE) + cx + PLAYERSIZE / 2, player.y * (1 - PLAYERSIZE) + cy + PLAYERSIZE / 2, NULL, PLAYERSIZE, PLAYERSIZE, 1);//draw player
 		DrawText(Menu, ws - 0.075, 0.05, NULL, 1);//draw menu button
 		DrawText(Level, 0.1, 0.05, NULL, 1);//draw level label
 		displayd = 1;//set displayd
@@ -706,15 +754,30 @@ void Draw(void){//draw/update screen
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);//draw white
 		SDL_RenderClear(renderer);//clear screen
 		DrawBase();//draw background image
-		Buttons = GetTextTexture(font_16, "Do you really want to go to menu?", 0, 0, 255);//win message
-		DrawText(Buttons, 0.5 * ws, 0.5 * hs, NULL, 1);//draw win message
+		Buttons = GetTextTexture(font_16, "Do you really want to go to menu?", 0, 0, 255);//go to menu question message
+		DrawText(Buttons, 0.5 * ws, 0.5 * hs, NULL, 1);//draw go to menu question message
 		SDL_DestroyTexture(Buttons);//destroy texture
-		Buttons = GetTextTexture(font_16, "Yes", 0, 0, 255);//win message
-		DrawText(Buttons, 0.3 * ws, 0.6 * hs, NULL, 1);//draw win message
+		Buttons = GetTextTexture(font_16, "Yes", 0, 0, 255);//yes button
+		DrawText(Buttons, 0.3 * ws, 0.6 * hs, NULL, 1);//draw yes button
 		SDL_DestroyTexture(Buttons);//destroy texture
-		Buttons = GetTextTexture(font_16, "No", 0, 0, 255);//win message
-		DrawText(Buttons, 0.7 * ws, 0.6 * hs, NULL, 1);//draw win message
+		Buttons = GetTextTexture(font_16, "No", 0, 0, 255);//no button
+		DrawText(Buttons, 0.7 * ws, 0.6 * hs, NULL, 1);//draw no button
 		SDL_DestroyTexture(Buttons);//destroy texture
+		displayd = 1;//set displayd
+		SDL_RenderPresent(renderer);//present rendered
+		break;
+	case LOSE:
+		if (displayd) break;
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);//draw white
+		SDL_RenderClear(renderer);//clear screen
+		DrawBase();//draw background image
+		Buttons = GetTextTexture(font_16, "You Lost", 0, 0, 255);//lose message
+		DrawText(Buttons, 0.5 * ws, 0.5 * hs, NULL, 1);//draw lose message
+		SDL_DestroyTexture(Buttons);//destroy texture
+		Buttons = GetTextTexture(font_16, "Replay", 0, 0, 255);//Replay button
+		DrawText(Buttons, 0.5 * ws, 0.5 * hs + 0.1, NULL, 1);//draw Replay button
+		SDL_DestroyTexture(Buttons);//destroy texture
+		DrawText(Menu, ws - 0.075, 0.05, NULL, 1);//draw menu button
 		displayd = 1;//set displayd
 		SDL_RenderPresent(renderer);//present rendered
 		break;
@@ -795,8 +858,9 @@ void Load(void){//load level from file
 			return;//exit function
 		}
 		home[i].x = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
-		home[i].y = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		home[i].y = atof(strtok(NULL, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
 	}
+	player = home[0];//get player starting position
 	fgets(string, 1024, file);//skip line
 	str = fgets(string, 1024, file);//get string
 	if (str == NULL){//if at end of file
@@ -806,7 +870,7 @@ void Load(void){//load level from file
 		return;//exit function
 	}
 	exitpos.x = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
-	exitpos.y = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+	exitpos.y = atof(strtok(NULL, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
 	fgets(string, 1024, file);//skip line
 	for (i = 0; i < ENEMY; i++){//for each enemy 
 		str = fgets(string, 1024, file);//get string
@@ -825,7 +889,7 @@ void Load(void){//load level from file
 			return;//exit function
 		}
 		enemys[i].cur.x = enemys[i].start.x = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
-		enemys[i].cur.y = enemys[i].start.y = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		enemys[i].cur.y = enemys[i].start.y = atof(strtok(NULL, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
 		str = fgets(string, 1024, file);//get string
 		if (str == NULL){//if at end of file
 			printf("Invalid level file.\n");//send error message
@@ -860,6 +924,17 @@ void AudioCallback(void *udata, Uint8 *stream, int len){//audio callback functio
 	SDL_MixAudioFormat(stream, audio_pos, deviceFormat, len, SDL_MIX_MAXVOLUME * sound);
 	audio_pos += len;
 	wav_current -= len;
+}
+
+double GetHome(void){//get distance to closest home
+	double distance;//distance to home
+	int i;
+	for (i = 0; i < HOME; i++){//for each home
+		if (i == 0 || hypot(home[i].x - player.x, home[i].y - player.y) < distance){//if it is the first loop or home is closer then last ones checked
+			distance = hypot(home[i].x - player.x, home[i].y - player.y);//set distance
+		}
+	}
+	return distance;
 }
 
 

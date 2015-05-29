@@ -61,8 +61,7 @@
 //in game values
 #define LEVELBUTTON (1.0/8)//size of level button
 #define LEVELBUTTONSPACING (1.0/6)//spacing of level button
-#define ENEMYSIZE (1.0/12)//size of enemy
-#define PLAYERSIZE (1.0/12)//size of player
+#define PLAYERSIZE (1.0/12)//size of player and enemy
 
 
 //What screen to display
@@ -71,13 +70,13 @@
 #define GAME 2 //display game
 #define WIN 3 //display win message
 #define EXIT 4 //warning for exiting to menu
+#define LOSE 5 //if you lost
 
 int displaymode;//what screen to display
 int level;//what level you are playing
 int maxlevel;//what level you have unlocked
 
 int select;//if player is selected or not
-double playerX, playerY;//player x and y position
 
 typedef struct{//position structure
 	double x, y;//position
@@ -94,6 +93,10 @@ typedef struct{//enemy position structure
 pos home[HOME];//home position for players
 pos exitpos;//exit position
 enemy enemys[ENEMY];//enemys
+
+pos player;//player position
+
+pos PlayerMovement;//how much player moved
 
 int displayd;//if displayd or not
 int levelview;//which level screen you are in
@@ -175,6 +178,7 @@ void LoadFile(void);//load from save file
 void SaveFile(void);//save to save file
 void Load(void);//load level from file
 void AudioCallback(void *udata, Uint8 *stream, int len);//audio callback function
+double GetHome(void);//get distance to closest home
 
 
 

@@ -1,4 +1,4 @@
-DefaultBGI.png;;Image to load for background. Square is default. use ";" before comment
+Tutorial.png;;Image to load for background. Square is default. use ";" before comment
 ;;skip line
 0.5, 1;;list of 8 home positions
 0.5, 1

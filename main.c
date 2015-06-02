@@ -857,8 +857,8 @@ void Load(void){//load level from file
 			displayd = 0;
 			return;//exit function
 		}
-		home[i].x = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
-		home[i].y = atof(strtok(NULL, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		home[i].x = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		home[i].y = atof(strtok(NULL, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
 	}
 	player = home[0];//get player starting position
 	fgets(string, 1024, file);//skip line
@@ -869,8 +869,8 @@ void Load(void){//load level from file
 		displayd = 0;
 		return;//exit function
 	}
-	exitpos.x = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
-	exitpos.y = atof(strtok(NULL, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+	exitpos.x = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+	exitpos.y = atof(strtok(NULL, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
 	fgets(string, 1024, file);//skip line
 	for (i = 0; i < ENEMY; i++){//for each enemy 
 		str = fgets(string, 1024, file);//get string
@@ -880,7 +880,7 @@ void Load(void){//load level from file
 			displayd = 0;
 			return;//exit function
 		}
-		enemys[i].image = atoi(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		enemys[i].image = atoi(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
 		str = fgets(string, 1024, file);//get string
 		if (str == NULL){//if at end of file
 			printf("Invalid level file.\n");//send error message
@@ -888,8 +888,8 @@ void Load(void){//load level from file
 			displayd = 0;
 			return;//exit function
 		}
-		enemys[i].cur.x = enemys[i].start.x = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
-		enemys[i].cur.y = enemys[i].start.y = atof(strtok(NULL, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		enemys[i].cur.x = enemys[i].start.x = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		enemys[i].cur.y = enemys[i].start.y = atof(strtok(NULL, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
 		str = fgets(string, 1024, file);//get string
 		if (str == NULL){//if at end of file
 			printf("Invalid level file.\n");//send error message
@@ -897,7 +897,7 @@ void Load(void){//load level from file
 			displayd = 0;
 			return;//exit function
 		}
-		enemys[i].speed = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		enemys[i].speed = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
 		str = fgets(string, 1024, file);//get string
 		if (str == NULL){//if at end of file
 			printf("Invalid level file.\n");//send error message
@@ -905,7 +905,7 @@ void Load(void){//load level from file
 			displayd = 0;
 			return;//exit function
 		}
-		enemys[i].range = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_-+=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
+		enemys[i].range = atof(strtok(str, " ,:;()<>\t\n\'\"\\/?&*^%$#@!~_=qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));//get character omitting everything other that number
 		fgets(string, 1024, file);//skip line
 	}
 	fclose(file);//close file

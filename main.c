@@ -708,12 +708,12 @@ void Draw(void){//draw/update screen
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);//draw white
 		SDL_RenderClear(renderer);//clear screen
 		DrawBase();//draw background image
+		DrawIMG(ExitIMG, exitpos.x * (1 - PLAYERSIZE) + cx + PLAYERSIZE / 2, exitpos.y * (1 - PLAYERSIZE) + cy + PLAYERSIZE / 2, NULL, PLAYERSIZE, PLAYERSIZE, 1);//draw exit
 		for (i = 0; i < ENEMY; i++){//for each enemy
 			if (enemys[i].image){//if there is enemy there
 				DrawIMG(EnemyIMG[enemys[i].image - 1], enemys[i].cur.x * (1 - PLAYERSIZE) + cx + PLAYERSIZE / 2, enemys[i].cur.y * (1 - PLAYERSIZE) + cy + PLAYERSIZE / 2, NULL, PLAYERSIZE, PLAYERSIZE, 1);//draw enemy
 			}
 		}
-		DrawIMG(ExitIMG, exitpos.x * (1 - PLAYERSIZE) + cx + PLAYERSIZE / 2, exitpos.y * (1 - PLAYERSIZE) + cy + PLAYERSIZE / 2, NULL, PLAYERSIZE, PLAYERSIZE, 1);//draw exit
 		DrawIMG(PlayerIMG, player.x * (1 - PLAYERSIZE) + cx + PLAYERSIZE / 2, player.y * (1 - PLAYERSIZE) + cy + PLAYERSIZE / 2, NULL, PLAYERSIZE, PLAYERSIZE, 1);//draw player
 		DrawText(Menu, ws - 0.075, 0.05, NULL, 1);//draw menu button
 		DrawText(Level, 0.1, 0.05, NULL, 1);//draw level label

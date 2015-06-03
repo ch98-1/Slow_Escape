@@ -1,5 +1,5 @@
 //Copyright (C) 2015  Corwin Hansen
-#ifndef COURWINS_H//include protection
+#ifndef CORWINS_H//include protection
 	#define CORWINS_H
 #include <stdlib.h>
 

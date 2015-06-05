@@ -37,7 +37,7 @@
 //paths
 #define RESOURCES "resources/" //media resources path. 
 #define FONTS "fonts/" //fonts path. Inside media resources path.
-#define FONT "OpenSans-Regular.ttf" //font path
+#define FONT "din1451alt.ttf" //font path
 #define SAVE "resources/save.txt" //save file full path
 #define PLAYERIMG "Player.png" //player image
 #define ENEMYIMG "Enemy" //enemy image prefix

@@ -50,7 +50,7 @@
 #define MENUBACKGROUND "MenuBackground.png"
 
 //number of levels
-#define MAXLEVEL 36//36 levels max
+#define MAXLEVEL 24//24 levels max
 
 //sizes of array
 #define HOME 8//8 home positions

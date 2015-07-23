@@ -57,6 +57,9 @@
 #define ENEMY 32//32 enemy
 #define ENEMYIMGSIZE 8//8 different enemy images
 
+//control options
+//#define MOBILE//you can control from anywhere in the screen
+#define SPEED 0.5
 
 //in game values
 #define LEVELBUTTON (1.0/8)//size of level button
@@ -95,6 +98,8 @@ pos exitpos;//exit position
 enemy enemys[ENEMY];//enemys
 
 pos player;//player position
+
+pos last;//last position
 
 pos PlayerMovement;//how much player moved
 

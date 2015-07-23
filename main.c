@@ -427,6 +427,7 @@ void Clicked(void){//x and y positions clicked
 		}
 		break;
 	case GAME:
+		#ifndef MOBILE
 		if (hypot(MouseX - (player.x * (1 - PLAYERSIZE) + cx + PLAYERSIZE / 2), MouseY - (player.y * (1 - PLAYERSIZE) + cy + PLAYERSIZE / 2)) < PLAYERSIZE / 2){//if clicked on player
 			select = 1;//make player selected
 			double x, y;//x and y position of mouse in in game coordinate
@@ -436,13 +437,19 @@ void Clicked(void){//x and y positions clicked
 			y = y < 0 ? 0 : y > 1 ? 1 : y;//get y in to range of 0 to 1
 			PlayerMovement.x += fabs(player.x - x);//get player movement
 			PlayerMovement.y += fabs(player.y - y);
-			player.x = x;//set player position to mouse position
-			player.y = y;
+			last.x = player.x = x;//set last and player position to mouse position
+			last.y = player.y = y;
 		}
+		#endif
 		if (MouseX > ws - 0.15 && MouseY < 0.1){//if clicked menu
 			displaymode = EXIT;//display menu
 			displayd = 0;
 		}
+		#ifdef MOBILE
+		select = 1;//make player selected
+		last.x = MouseX;//set last position to mouse position
+		last.y = MouseY;
+		#endif
 		break;
 	case WIN:
 		if (level != 1){//if not in level
@@ -504,6 +511,19 @@ void Clicked(void){//x and y positions clicked
 
 void Draged(void){
 	if (displaymode == GAME && select){//if player is selected
+		#ifdef MOBILE
+		double x, y;//x and y position of mouse in in game coordinate
+		x = player.x - (last.x - MouseX)*SPEED;//get position
+		y = player.y - (last.y - MouseY)*SPEED;
+		x = x < 0 ? 0 : x > 1 ? 1 : x;//get x in to range of 0 to 1
+		y = y < 0 ? 0 : y > 1 ? 1 : y;//get y in to range of 0 to 1
+		PlayerMovement.x += fabs(player.x - x);//get player movement
+		PlayerMovement.y += fabs(player.y - y);
+		player.x = x;//set player position
+		player.y = y;
+		last.x = MouseX;//set last x and y position
+		last.y = MouseY;
+		#else
 		double x, y;//x and y position of mouse in in game coordinate
 		x = (MouseX - cx - PLAYERSIZE / 2) / (1 - PLAYERSIZE);//get position
 		y = (MouseY - cy - PLAYERSIZE / 2) / (1 - PLAYERSIZE);
@@ -513,6 +533,7 @@ void Draged(void){
 		PlayerMovement.y += fabs(player.y - y);
 		player.x = x;//set player position to mouse position
 		player.y = y;
+		#endif
 	}
 	return;//exit function
 }
